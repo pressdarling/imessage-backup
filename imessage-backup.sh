@@ -1,6 +1,8 @@
 #!/bin/zsh
 
-ROOT_DIR="/Users/patrickconway/imessage-backup"
+# default root directory = ~/imessage-backup
+# change this to your desired directory, I use an external drive
+ROOT_DIR="$HOME/imessage-backup"
 # Define base directory for exports
 BASE_EXPORT_DIR="$ROOT_DIR/backups/"
 LOG_FILE="$ROOT_DIR/log_file.log"
@@ -28,11 +30,11 @@ perform_backup() {
   rm -rf $export_dir
 
   # Run imessage-exporter
-  log "Running exporter tool: imessage-exporter -f txt -o $export_dir -a macOS" 
-  if imessage-exporter -f txt -o "$export_dir" -a macOS ; then
-    log "Successfully exported iMessages to $export_dir" 
+  log "Running exporter tool: imessage-exporter -f txt -o $export_dir -a macOS"
+  if imessage-exporter -f txt -o "$export_dir" -a macOS; then
+    log "Successfully exported iMessages to $export_dir"
   else
-    log "Error: Failed to export iMessages for $backup_date" 
+    log "Error: Failed to export iMessages for $backup_date"
     return 1
   fi
 
@@ -40,15 +42,15 @@ perform_backup() {
   # I have Google Drive client running locally on my machine, listening to updates on the ~/imessage-backup dir
   # so I don't need to use gdrive cli to sync
 
-  # log "Syncing to S3: aws s3 --profile imessage-backup sync $ROOT_DIR $S3_BUCKET" 
+  # log "Syncing to S3: aws s3 --profile imessage-backup sync $ROOT_DIR $S3_BUCKET"
   # if aws s3 --profile imessage-backup sync "$ROOT_DIR" "$S3_BUCKET/" ; then
-  #   log "Successfully synced messages to $S3_BUCKET" 
+  #   log "Successfully synced messages to $S3_BUCKET"
   # else
-  #   log "Error: Failed to sync messages to S3 bucket" 
+  #   log "Error: Failed to sync messages to S3 bucket"
   #   return 1
   # fi
 
-  log "Completed iMessage export and sync" 
+  log "Completed iMessage export and sync"
 }
 
 main() {
@@ -57,16 +59,16 @@ main() {
   # Check if the last backup date file exists
   if [[ -f "$LAST_BACKUP_FILE" ]]; then
     LAST_BACKUP_DATE=$(cat "$LAST_BACKUP_FILE")
-      log "Last run on $LAST_BACKUP_DATE"
+    log "Last run on $LAST_BACKUP_DATE"
   fi
 
-  if perform_backup ; then
+  if perform_backup; then
     # Update the last backup date file
-    echo "$CURRENT_DATE" > "$LAST_BACKUP_FILE"
+    echo "$CURRENT_DATE" >"$LAST_BACKUP_FILE"
   else
     log "Error: Backup failed for $CURRENT_DATE"
     exit 1
   fi
-} 
+}
 
 main | tee -a
