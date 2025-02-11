@@ -22,7 +22,70 @@ This script is entirely specific to my setup, but you could easily tweak it for 
 
 ## TODO
 
+### Ideas
+
 - Add initial setup script to ease config
-- Adjust plist to detect user home directory
 - create plist template to be injected with user config options
+  - user home directory
+  - export path
+  - desired export options per imessage-exporter
+  - multiple export option schedules (e.g. text daily, html weekly, full monthly)
 - Check whether plist exists before creating it
+- Add option to run on-demand
+- Check for rsync, imessage-exporter, and other dependencies
+- Use a click cookiecutter to make this a proper CLI tool
+- grab a razor and see if I can shave my way out of this herd of yak
+
+These should help me fix up my current setup, stored in iTerm2 snippets to be run as one-liners:
+
+### Full HTML with attachments
+
+```zsh
+# full imessage-exporter run with attachments, undated
+# tmp directory required to avoid some weird bug with the exporter
+cd /Volumes/Acasis\ TBU405PROM1\ 4TB\ WD_BLACK\ SN850X/imessage_export/full/ && \
+imessage-exporter \
+--export-path /Volumes/Acasis\ TBU405PROM1\ 4TB\ WD_BLACK\ SN850X/imessage_export/full/tmp \
+--format html \
+--no-lazy \
+--copy-method clone && \
+rsync -avhP \
+--remove-source-files \
+'/Volumes/Acasis TBU405PROM1 4TB WD_BLACK SN850X/imessage_export/full/tmp/' \
+'/Volumes/Acasis TBU405PROM1 4TB WD_BLACK SN850X/imessage_export/full/' && \
+rsync -avhP \
+'/Volumes/Acasis TBU405PROM1 4TB WD_BLACK SN850X/imessage_export/' \
+root@archive.local:/mnt/user/iMazing/imessage_export && \
+imessage-exporter -d
+```
+
+### HTML only
+
+```zsh
+# html imessage-exporter run, no attachments
+# need to fix date rotation, also the inline date doesn't pass through to later commands
+cd /Volumes/Acasis\ TBU405PROM1\ 4TB\ WD_BLACK\ SN850X/imessage_export/html/ && \
+imessage-exporter \
+--export-path /Volumes/Acasis\ TBU405PROM1\ 4TB\ WD_BLACK\ SN850X/imessage_export/html/$(date '+%Y%m%d_%H%M%S')/ \
+--format html \
+--no-lazy &&  \
+rsync -avhP \
+'/Volumes/Acasis TBU405PROM1 4TB WD_BLACK SN850X/imessage_export/' \
+root@archive.local:/mnt/user/iMazing/imessage_export && \
+imessage-exporter -d
+```
+
+### Text only
+
+```zsh
+# txt imessage-exporter run, no attachments
+cd /Volumes/Acasis\ TBU405PROM1\ 4TB\ WD_BLACK\ SN850X/imessage_export/txt/ && \
+imessage-exporter \
+--export-path /Volumes/Acasis\ TBU405PROM1\ 4TB\ WD_BLACK\ SN850X/imessage_export/txt/$(date '+%Y%m%d_%H%M%S')/ \
+--format txt \
+--no-lazy &&  \
+rsync -avhP \
+'/Volumes/Acasis TBU405PROM1 4TB WD_BLACK SN850X/imessage_export/' \
+root@archive.local:/mnt/user/iMazing/imessage_export && \
+imessage-exporter -d
+```
