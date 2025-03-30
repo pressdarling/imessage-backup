@@ -33,7 +33,12 @@ This script is entirely specific to my setup, but you could easily tweak it for 
 - Check whether plist exists before creating it
 - Add option to run on-demand
 - Check for rsync, imessage-exporter, and other dependencies
+	- ask to install via brew
+	- potentially mention rclone for cloud sync
 - Use a click cookiecutter to make this a proper CLI tool
+- integrate with datasette/SQLite database for querying
+- reinvent the wheel and make a GUI for this
+- add a web interface for this
 - grab a razor and see if I can shave my way out of this herd of yak
 
 These should help me fix up my current setup, stored in iTerm2 snippets to be run as one-liners:
